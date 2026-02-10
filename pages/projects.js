@@ -678,64 +678,6 @@ ${defaultOwner}/${defaultRepo}
         console.log(`📁 Repository: ${repoOwner}/${repoName}`);
         console.log(`📅 Last update: ${new Date().toLocaleString('he-IL')}`);
         
-        // עדכון Netlify באופן אוטומטי
-        try {
-          // נשתמש ב-Build Hook קבוע של Netlify
-          // החלף את ה-URL הזה עם ה-Build Hook האמיתי שלך מ-Netlify
-          // כדי ליצור Build Hook:
-          // 1. היכנס לחשבון ה-Netlify שלך
-          // 2. בחר את האתר שלך (gabiaharon.com)
-          // 3. לחץ על "Site settings" בתפריט העליון
-          // 4. בתפריט הצד, בחר "Build & deploy"
-          // 5. גלול למטה עד שתמצא את החלק "Build hooks"
-          // 6. לחץ על "Add build hook"
-          // 7. תן לו שם (למשל "Auto Deploy")
-          // 8. בחר את הענף שברצונך להפעיל (בדרך כלל "master" או "main")
-          // 9. לחץ על "Save"
-          // 10. העתק את ה-URL שנוצר והדבק אותו כאן
-          const netlifyBuildHook = "https://api.netlify.com/build_hooks/688688c76292b35f68ccf3cb";
-          
-          console.log('🔄 מעדכן את Netlify אוטומטית...');
-          
-          // שליחת בקשת POST ל-build hook של Netlify
-          const netlifyResponse = await fetch(netlifyBuildHook, {
-            method: 'POST',
-          });
-          
-          if (netlifyResponse.ok) {
-            console.log('✅ Netlify עודכן בהצלחה!');
-            console.log('האתר יתעדכן תוך 1-2 דקות.');
-          } else {
-            console.error('❌ שגיאה בעדכון Netlify:', netlifyResponse.status);
-            
-            // אם יש שגיאה, נציע למשתמש לעדכן את ה-Build Hook
-            const updateBuildHook = confirm('❌ שגיאה בעדכון Netlify. האם ברצונך להגדיר Build Hook חדש?');
-            
-            if (updateBuildHook) {
-              const newHook = prompt('הכנס את ה-URL של Build Hook של Netlify:');
-              
-              if (newHook && newHook.includes('api.netlify.com/build_hooks/')) {
-                localStorage.setItem('netlifyBuildHook', newHook);
-                
-                // נסה שוב עם ה-Hook החדש
-                const retryResponse = await fetch(newHook, {
-                  method: 'POST',
-                });
-                
-                if (retryResponse.ok) {
-                  console.log('✅ Netlify עודכן בהצלחה עם ה-Hook החדש!');
-                  alert('✅ Netlify עודכן בהצלחה!\nהאתר יתעדכן תוך 1-2 דקות.');
-                } else {
-                  console.error('❌ שגיאה בעדכון Netlify גם עם ה-Hook החדש:', retryResponse.status);
-                  alert('❌ שגיאה בעדכון Netlify גם עם ה-Hook החדש.');
-                }
-              }
-            }
-          }
-        } catch (error) {
-          console.error('❌ שגיאה בעדכון Netlify:', error);
-        }
-        
         return true;
       } else {
         console.warn('⚠️ חלק מהקבצים לא עודכנו');
