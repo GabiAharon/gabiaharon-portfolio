@@ -106,7 +106,6 @@ const ProfileImage = () => (
   <motion.div
     className="relative mx-auto"
     style={{ width: 240, height: 240 }}
-    initial={{ scale: 0.8, opacity: 0 }}
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
   >
@@ -191,11 +190,20 @@ const Particles = () => {
 };
 
 // ============================================
-// SCROLL REVEAL
+// SCROLL REVEAL — client-only so SSR is never opacity:0
 // ============================================
 const Reveal = ({ children, delay = 0, className = "" }) => {
+  const [mounted, setMounted] = useState(false);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
+
+  useEffect(() => { setMounted(true); }, []);
+
+  // Before hydration: render fully visible (no animation)
+  if (!mounted) {
+    return <div ref={ref} className={className}>{children}</div>;
+  }
+
   return (
     <motion.div ref={ref} className={className} initial={{ opacity: 0, y: 36 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7, delay, ease: [0.19, 1, 0.22, 1] }}>
       {children}
@@ -236,7 +244,7 @@ export default function Home() {
         <Particles />
 
         {/* NAV */}
-        <motion.nav initial={{ y: -80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} className="fixed top-0 left-0 right-0 z-50 px-4 py-4">
+        <motion.nav initial={{ y: -80 }} animate={{ y: 0 }} transition={{ duration: 0.6 }} className="fixed top-0 left-0 right-0 z-50 px-4 py-4">
           <div className="max-w-5xl mx-auto flex items-center justify-between backdrop-blur-md bg-slate-900/60 rounded-full px-6 py-3 border border-white/10">
             <span className="font-bold text-white text-base" style={{ fontFamily: "'Assistant', sans-serif" }}>{isHe ? "גבי אהרון" : "Gabi Aharon"}</span>
             <div className="hidden md:flex items-center gap-6">
@@ -263,7 +271,7 @@ export default function Home() {
               {/* Image */}
               <div className="flex flex-col items-center gap-5 flex-shrink-0">
                 <ProfileImage />
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9 }} className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-full px-4 py-2">
+                <motion.div animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9 }} className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-full px-4 py-2">
                   <Sparkles size={13} className="text-amber-400" />
                   <span className="text-amber-300 text-xs font-medium">{isHe ? "ההרצאה שלי | הבמה הכי גדולה היא החיים עצמם" : "My Talk | The Biggest Stage is Life Itself"}</span>
                 </motion.div>
@@ -271,17 +279,17 @@ export default function Home() {
 
               {/* Text */}
               <div className={`flex-1 ${isMobile ? "text-center" : isHe ? "text-right" : "text-left"}`}>
-                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-blue-400 text-lg mb-2">{isHe ? "שלום, אני" : "Hello, I'm"}</motion.p>
-                <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="font-black leading-tight mb-3" style={{ fontSize: isMobile ? "2.8rem" : "3.8rem", fontFamily: "'Assistant', sans-serif" }}>
+                <motion.p animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-blue-400 text-lg mb-2">{isHe ? "שלום, אני" : "Hello, I'm"}</motion.p>
+                <motion.h1 animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="font-black leading-tight mb-3" style={{ fontSize: isMobile ? "2.8rem" : "3.8rem", fontFamily: "'Assistant', sans-serif" }}>
                   <span className="bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">{isHe ? "גבי אהרון" : "Gabi Aharon"}</span>
                 </motion.h1>
-                <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="text-xl md:text-2xl text-blue-300 font-medium mb-4">
+                <motion.h2 animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="text-xl md:text-2xl text-blue-300 font-medium mb-4">
                   {isHe ? "מומחה לשפת גוף ועמידה מול קהל" : "Body Language & Public Speaking Expert"}
                 </motion.h2>
-                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="text-gray-400 text-base md:text-lg mb-8 max-w-lg leading-relaxed">
+                <motion.p animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="text-gray-400 text-base md:text-lg mb-8 max-w-lg leading-relaxed">
                   {isHe ? "מסייע למנהלים, יזמים ואנשי מקצוע להפוך לדוברים בטוחים ומשפיעים" : "Helping executives, entrepreneurs and professionals become confident and influential speakers"}
                 </motion.p>
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className={`flex gap-4 flex-wrap ${isMobile ? "justify-center" : isHe ? "justify-end" : "justify-start"}`}>
+                <motion.div animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className={`flex gap-4 flex-wrap ${isMobile ? "justify-center" : isHe ? "justify-end" : "justify-start"}`}>
                   <motion.a href="https://wa.me/972546436659" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-full text-sm transition-colors" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                     <MessageCircle size={16} />{isHe ? "בואו נדבר" : "Let's Talk"}
                   </motion.a>
@@ -367,7 +375,7 @@ export default function Home() {
                   <p>{isHe ? "המטרה שלי היא לחשוף את הפוטנציאל הסמוי שיש בכל אחד מאיתנו להשפיע, לשכנע ולהוביל שינוי." : "My mission is to unlock the hidden potential within each of us to influence, persuade, and lead change."}</p>
                   <p>{isHe ? "היכולת לעמוד מול קהל בביטחון, להשתמש בשפת גוף מדויקת ולהעביר מסר חזק - היא לא רק כלי, היא נשק סודי." : "The ability to stand confidently before an audience, use precise body language, and deliver a powerful message - is not just a tool, it's a secret weapon."}</p>
                 </div>
-                <motion.blockquote className="mt-8 border-r-4 border-blue-500 pr-5 py-1" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}>
+                <motion.blockquote className="mt-8 border-r-4 border-blue-500 pr-5 py-1" whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.3 }}>
                   <Quote size={16} className="text-blue-400 mb-2" />
                   <p className="text-blue-200 text-lg italic font-medium">{isHe ? "הבמה הכי גדולה היא החיים עצמם" : "The biggest stage is life itself"}</p>
                 </motion.blockquote>
@@ -398,7 +406,7 @@ export default function Home() {
               <div className="w-14 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-4" />
             </Reveal>
             <AnimatePresence mode="wait">
-              <motion.div key={activeTestimonial} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.45 }} className="p-8 md:p-10 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-white/10">
+              <motion.div key={activeTestimonial} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.45 }} className="p-8 md:p-10 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-white/10">
                 <Quote size={26} className="text-blue-500/40 mb-4" />
                 <p className="text-gray-200 text-base md:text-lg leading-relaxed mb-8">{isHe ? TESTIMONIALS[activeTestimonial].he.quote : TESTIMONIALS[activeTestimonial].en.quote}</p>
                 <div className="flex items-center gap-4">
